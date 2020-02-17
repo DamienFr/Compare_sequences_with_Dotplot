@@ -1,5 +1,6 @@
 # Compare_sequences_with_Dotplot
-Compare sequences against others and represent the comparison as a dotplot
+Compare sequences against others and represent the comparison as a dotplot.
+Needs mummerplot AND blast
 
 # Usage
 blast_comparison_dotplot.sh -q query.fasta -s subject.fasta [-m 90] [-l 90] [-k] [-h]
