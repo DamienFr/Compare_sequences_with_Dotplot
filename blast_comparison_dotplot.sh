@@ -9,16 +9,18 @@ usage() { printf "Compare sequences against other and represent the comparison a
 \t-m\tMaximum number of hits to consider per pair of query/subjects. Default 100
 \t-l\tmin_hit_len Default 200
 \t-k\tactivate log mode. Keep the two subfolders created for the analysis instead of removing them 
+\t-d\tDebug mode For debuging purposes ONLY. Provide your own blast table [-d your_own_filtered_blast_table.tab]
 \t-h\tdisplay this help\n" 1>&2; exit 1; }
 
 log_mode=false
 
-while getopts q:s:m:l:kh? opts; do
+while getopts q:s:m:l:d:kh? opts; do
    case ${opts} in
       q) file=${OPTARG} ;;
       s) database=${OPTARG} ;;
       m) max_nb_hit=${OPTARG} ;;
       l) min_hit_len=${OPTARG} ;;
+      d) debug_mode=${OPTARG} ;;
       k) log_mode=true ;;
       h|\?) usage;  exit 0 ;;
    esac
@@ -53,16 +55,22 @@ perl -F',' -ane '$qlength = 100*$F[3]/$F[12]; $slength = 100*$F[3]/$F[13]; $F[2]
 #min_hit_len=200
 # env max_nb_hit=$max_nb_hit min_hit_len=$min_hit_len perl -F',' -ane 'if($. == 1){print}else{$h{$F[1] . $F[0]}++ ;if( $h{$F[1] . $F[0]} <= $ENV{max_nb_hit} && $F[5] > $ENV{min_hit_len}){print}}' /home/bacterio/Copy/01.BIOINFO/26.LM180_nanopore/03.check_pcur_on_chrom/res_pilon.fasta_249733nucl_splitted1_on_pilon.fasta_5166189nucl_splitted4
 
-env max_nb_hit=$max_nb_hit min_hit_len=$min_hit_len perl -F',' -ane 'if($. == 1){print}else{$h{$F[1] . $F[0]}++ ;if( $h{$F[1] . $F[0]} <= $ENV{max_nb_hit} && $F[5] > $ENV{min_hit_len}){print}}'  res_${file_name}_on_${database_name} > res_${file_name}_on_${database_name}_filtrated
+env max_nb_hit=$max_nb_hit min_hit_len=$min_hit_len perl -F',' -ane 'if($. == 1){print}else{$h{$F[1] . $F[0]}++ ;if( $h{$F[1] . $F[0]} <= $ENV{max_nb_hit} && $F[5] > $ENV{min_hit_len}){print}}'  res_${file_name}_on_${database_name} > res_${file_name}_on_${database_name}_filtered
 
-nb_results=$(wc -l < res_${file_name}_on_${database_name}_filtrated)
+if [ ${#debug_mode} -gt 0 ] ; then 
+printf "\n\n\n######### ######### #########\nDebug mode activated, program behavior altered. Development purposes only\n######### ######### #########\n\n"
+cp ${debug_mode} res_${file_name}_on_${database_name}_filtered
+fi
+
+nb_results=$(wc -l < res_${file_name}_on_${database_name}_filtered)
 
 if [ $nb_results -gt 1 ] ;then
 
 env file=$file_name database=$database_name perl -F',' -ane 'BEGIN{print "$ENV{database} $ENV{file}" . "\nNUCMER\n" };
-if($.>1){ print ">" . $F[0] . " $F[1] $F[14] $F[15]\n$F[8] $F[9] $F[10] $F[11] 0 0 0\n0\n" }' res_${file_name}_on_${database_name}_filtrated > ${file_name}_on_${database_name}.delta
+if($.>1){ print ">" . $F[0] . " $F[1] $F[14] $F[15]\n$F[8] $F[9] $F[10] $F[11] 0 0 0\n0\n" }' res_${file_name}_on_${database_name}_filtered > ${file_name}_on_${database_name}.delta
 
 mummerplot -size large -Q ${database} -R ${file} -t png -p ${file_name}_on_${database_name} ${file_name}_on_${database_name}.delta
+# mummerplot -size large -Q ${database} -R ${file} -t postscript -p ${file_name}_on_${database_name} ${file_name}_on_${database_name}.delta
 printf "\n#####################\nEnd of the pipeline\n#####################\n\nYour output files is\n${file_name}_on_${database_name}.png\n\n"
 
 else 
@@ -75,13 +83,13 @@ fi
 
 if ! $log_mode  ; then 
 rm -f ${file_name}_on_${database_name}.gp
+rm -f ${file_name}_on_${database_name}.delta
 rm -f ${file_name}_on_${database_name}.fplot
 rm -f ${file_name}_on_${database_name}.rplot
 rm -f db*
 rm -f resultat_blast.tmp
 rm -f res_${file_name}_on_${database_name}
 fi
-
 
 
 
