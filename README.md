@@ -1,6 +1,8 @@
 # Compare_sequences_with_Dotplot
 Compare sequences against others and represent the comparison as a dotplot.
 
+![schematics](https://raw.githubusercontent.com/DamienFr/Compare_sequences_with_Dotplot/master/dotplot.png)
+
 # Usage
 blast_comparison_dotplot.sh -q query.fasta -s subject.fasta [-m 90] [-l 90] [-k] [-h]
 [] means argument is optional
