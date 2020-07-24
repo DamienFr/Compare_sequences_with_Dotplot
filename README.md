@@ -17,8 +17,8 @@ blast_comparison_dotplot.sh -q query.fasta -s subject.fasta [-m 90] [-l 90] [-k]
 
 
 # Dependencies
-Blast+ v.2.9.0
-mummerplot 3.5
+Blast+ v.2.9.0  
+mummerplot 3.5  
 Perl core
 
 # Author
