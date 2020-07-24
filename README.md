@@ -1,5 +1,5 @@
 # Compare_sequences_with_Dotplot
-Compare sequences against others and represent the comparison as a dotplot.
+This script produces a dotplot showing the identity between one or multiple sequences of a subject fasta file and one or multiple sequences of a query fasta file.
 
 ![schematics](https://raw.githubusercontent.com/DamienFr/Compare_sequences_with_Dotplot/master/dotplot.png)
 
